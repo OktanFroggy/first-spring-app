@@ -1,22 +1,13 @@
-# Используем актуальный образ Eclipse Temurin (Java 21)
-FROM eclipse-temurin:21-jdk
 
-# Устанавливаем рабочую директорию внутри контейнера
+FROM maven:3.8-openjdk-21 AS build
+
+
+COPY . /app
 WORKDIR /app
 
-# Копируем файлы для сборки
-COPY mvnw .
-COPY .mvn .mvn
-COPY pom.xml .
+RUN mvn clean package -DskipTests
 
-# Даем права на выполнение mvnw и скачиваем зависимости
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
-
-# Копируем исходный код
-COPY src src
-
-# Собираем приложение (пропускаем тесты для скорости)
-RUN ./mvnw package -DskipTests
-
-# Команда для запуска приложения
-CMD ["java", "-jar", "target/*.jar"]
+FROM openjdk:21-jdk-slim
+COPY --from=build /app/target/*.jar /app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "/app.jar"]
