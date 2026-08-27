@@ -1,0 +1,22 @@
+# Используем легкий образ с Java 21
+FROM openjdk:21-jdk-slim
+
+# Устанавливаем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем файлы для сборки
+COPY mvnw .
+COPY .mvn .mvn
+COPY pom.xml .
+
+# Даем права на выполнение mvnw и скачиваем зависимости
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
+
+# Копируем исходный код
+COPY src src
+
+# Собираем приложение (пропускаем тесты для скорости)
+RUN ./mvnw package -DskipTests
+
+# Команда для запуска приложения
+CMD ["java", "-jar", "target/*.jar"]
