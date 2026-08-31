@@ -17,7 +17,7 @@ public class DemoApplication {
 
 	@GetMapping("/hello")
 	public String sayhello() {
-		return "Если ты это читаешь значит я тебя очень сильно люблю!!!";
+		return "Нахуй иди";
 	}
 
 }
