@@ -1,22 +1,73 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <link rel="stylesheet" href="/Style.css">
     <meta charset="UTF-8">
-    <title>Lilo</title>
+    <title>RPG Game</title>
+    <link rel="stylesheet" th:href="@{/Style.css}">
 </head>
 <body>
-<h1>Hello My Friends</h1>
+
+<header class="game-header">
+    <h1>⚔️ Пошаговая RPG ⚔️</h1>
+</header>
 
 <div class="container">
-    <div class="sidebar-left">Поле игрока</div>
-    <div class="main-content">
-        <img src="/обои сейчас.png" alt="обои сейчас.png">
-        <p>
-            Здесь скоро будет интерфейс
-        </p>
+    <!-- Левая колонка: Игрок -->
+    <div class="sidebar-left">
+        <h2>Игрок</h2>
+        <div class="card">
+            <h3 th:text="${hero.name}">Герой</h3>
+            <p><strong>Здоровье:</strong> <span th:text="${hero.hp}">100</span> / <span th:text="${hero.maxHp}">100</span></p>
+            <div class="hp-bar">
+                <div class="hp-fill" th:style="'width: ' + (${hero.hp} * 100 / ${hero.maxHp}) + '%;'"></div>
+            </div>
+            <p style="margin-top: 10px;"><strong>Броня:</strong> <span th:text="${hero.baseArmor}">3</span></p>
+            <p th:if="${hero.isDefending}" class="status-shield">🛡️ Защитная стойка активна!</p>
+        </div>
     </div>
-    <div class="sidebar-right">Поле врагов</div>
+
+    <!-- Средняя колонка: Кнопки и Лог -->
+    <div class="main-content">
+        <h2>Арена</h2>
+
+        <div class="actions" th:if="${hero.isAlive() and enemy.isAlive()}">
+            <form th:action="@{/attack}" method="post">
+                <button type="submit" class="btn btn-attack">Атака ⚔️</button>
+            </form>
+            <form th:action="@{/defend}" method="post">
+                <button type="submit" class="btn btn-defend">Защита 🛡️</button>
+            </form>
+            <form th:action="@{/heal}" method="post">
+                <button type="submit" class="btn btn-heal">Лечение 🧪</button>
+            </form>
+        </div>
+
+        <div class="actions" th:if="${!hero.isAlive() or !enemy.isAlive()}">
+            <form th:action="@{/restart}" method="post">
+                <button type="submit" class="btn btn-restart">Начать новый бой 🔄</button>
+            </form>
+        </div>
+
+        <div class="log-box">
+            <h3>Ход боя:</h3>
+            <ul>
+                <li th:each="log : ${logs}" th:text="${log}">Событие</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Правая колонка: Противник -->
+    <div class="sidebar-right">
+        <h2>Противник</h2>
+        <div class="card">
+            <h3 th:text="${enemy.name}">Гоблин</h3>
+            <p><strong>Здоровье:</strong> <span th:text="${enemy.hp}">80</span> / <span th:text="${enemy.maxHp}">80</span></p>
+            <div class="hp-bar">
+                <div class="hp-fill enemy-hp" th:style="'width: ' + (${enemy.hp} * 100 / ${enemy.maxHp}) + '%;'"></div>
+            </div>
+            <p style="margin-top: 10px;"><strong>Броня:</strong> <span th:text="${enemy.armor}">2</span></p>
+        </div>
+    </div>
 </div>
 
 </body>
